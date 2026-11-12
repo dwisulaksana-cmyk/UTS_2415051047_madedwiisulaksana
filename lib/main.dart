@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/main_navigation_screen.dart';
 
 void main() {
   runApp(const ExploreOrmawaApp());
@@ -25,11 +26,7 @@ class ExploreOrmawaApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('Explore Ormawa Undiksha - Initializing UI'),
-        ),
-      ),
+      home: const MainNavigationScreen(),
     );
   }
 }
