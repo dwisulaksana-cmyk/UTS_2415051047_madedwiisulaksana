@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/saved_ormawa_model.dart';
+import '../providers/saved_ormawa_provider.dart';
 
 class EditSavedOrmawaScreen extends StatefulWidget {
   final SavedOrmawaModel savedOrmawa;
@@ -31,17 +33,47 @@ class _EditSavedOrmawaScreenState extends State<EditSavedOrmawaScreen> {
     super.dispose();
   }
 
-  void _updateForm() {
-    if (_formKey.currentState!.validate()) {
+  Future<void> _updateForm() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (widget.savedOrmawa.id == null) return;
+
+    final provider = context.read<SavedOrmawaProvider>();
+    final updatedItem = SavedOrmawaModel(
+      id: widget.savedOrmawa.id,
+      studentNim: widget.savedOrmawa.studentNim,
+      ormawaId: widget.savedOrmawa.ormawaId,
+      ormawaName: widget.savedOrmawa.ormawaName,
+      category: widget.savedOrmawa.category,
+      targetDivision: _divisionController.text.trim(),
+      note: _noteController.text.trim(),
+      priority: _priority,
+    );
+
+    final success = await provider.updateSavedOrmawa(widget.savedOrmawa.id!, updatedItem);
+    if (!mounted) return;
+
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Perubahan berhasil disimpan')),
+        SnackBar(
+          content: const Text('Perubahan berhasil disimpan ke database!'),
+          backgroundColor: Colors.green.shade700,
+        ),
       );
       Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(provider.errorMessage ?? 'Gagal memperbarui data'),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isSubmitting = context.watch<SavedOrmawaProvider>().isSubmitting;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Catatan Ormawa'),
@@ -108,9 +140,15 @@ class _EditSavedOrmawaScreenState extends State<EditSavedOrmawaScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: _updateForm,
-                  icon: const Icon(Icons.check_circle),
-                  label: const Text('Simpan Perubahan'),
+                  onPressed: isSubmitting ? null : _updateForm,
+                  icon: isSubmitting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Icon(Icons.check_circle),
+                  label: Text(isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0D47A1),
                     foregroundColor: Colors.white,

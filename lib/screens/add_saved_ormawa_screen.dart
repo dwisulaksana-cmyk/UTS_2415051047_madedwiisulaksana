@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/ormawa_model.dart';
+import '../models/saved_ormawa_model.dart';
+import '../providers/saved_ormawa_provider.dart';
 
 class AddSavedOrmawaScreen extends StatefulWidget {
   final OrmawaModel ormawa;
@@ -23,17 +26,45 @@ class _AddSavedOrmawaScreenState extends State<AddSavedOrmawaScreen> {
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final provider = context.read<SavedOrmawaProvider>();
+    final newItem = SavedOrmawaModel(
+      studentNim: SavedOrmawaProvider.defaultStudentNim,
+      ormawaId: widget.ormawa.id,
+      ormawaName: widget.ormawa.name,
+      category: widget.ormawa.category,
+      targetDivision: _divisionController.text.trim(),
+      note: _noteController.text.trim(),
+      priority: _priority,
+    );
+
+    final success = await provider.addSavedOrmawa(newItem);
+    if (!mounted) return;
+
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Menyimpan ${widget.ormawa.shortName}...')),
+        SnackBar(
+          content: Text('${widget.ormawa.shortName} berhasil disimpan ke daftar minat!'),
+          backgroundColor: Colors.green.shade700,
+        ),
       );
       Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(provider.errorMessage ?? 'Gagal menyimpan data'),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isSubmitting = context.watch<SavedOrmawaProvider>().isSubmitting;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Simpan Minat Ormawa'),
@@ -49,7 +80,11 @@ class _AddSavedOrmawaScreenState extends State<AddSavedOrmawaScreen> {
                 widget.ormawa.name,
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              Text('Kategori: ${widget.ormawa.category}'),
+              const SizedBox(height: 4),
+              Text(
+                'Kategori: ${widget.ormawa.category} • ${widget.ormawa.faculty}',
+                style: TextStyle(color: Colors.grey.shade700),
+              ),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _divisionController,
@@ -103,9 +138,15 @@ class _AddSavedOrmawaScreenState extends State<AddSavedOrmawaScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: _submitForm,
-                  icon: const Icon(Icons.save),
-                  label: const Text('Simpan ke Database'),
+                  onPressed: isSubmitting ? null : _submitForm,
+                  icon: isSubmitting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Icon(Icons.save),
+                  label: Text(isSubmitting ? 'Menyimpan...' : 'Simpan ke Database'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0D47A1),
                     foregroundColor: Colors.white,

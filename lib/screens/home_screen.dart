@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/ormawa_provider.dart';
+import '../providers/saved_ormawa_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   final VoidCallback onExploreTap;
@@ -12,6 +15,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final totalOrmawa = context.watch<OrmawaProvider>().allOrmawa.length;
+    final totalSaved = context.watch<SavedOrmawaProvider>().savedList.length;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Explore Ormawa Undiksha'),
@@ -62,7 +68,31 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'Total Ormawa',
+                    '$totalOrmawa Organisasi',
+                    Icons.groups,
+                    const Color(0xFF0D47A1),
+                    onExploreTap,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    'Minat Tersimpan',
+                    '$totalSaved Pilihan',
+                    Icons.bookmark,
+                    const Color(0xFFE65100),
+                    onSavedTap,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 22),
             const Text(
               'Kategori Organisasi',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -76,25 +106,11 @@ class HomeScreen extends StatelessWidget {
               mainAxisSpacing: 12,
               childAspectRatio: 2.3,
               children: [
-                _buildCategoryTile(Icons.account_balance, 'BEM', 'Eksekutif Mahasiswa', const Color(0xFF0D47A1)),
-                _buildCategoryTile(Icons.gavel, 'MPM', 'Legislatif Mahasiswa', const Color(0xFF4A148C)),
-                _buildCategoryTile(Icons.school, 'HMJ', 'Himpunan Jurusan', const Color(0xFF00695C)),
-                _buildCategoryTile(Icons.sports_soccer, 'UKM', 'Minat & Bakat', const Color(0xFFE65100)),
+                _buildCategoryTile(context, Icons.account_balance, 'BEM', 'Eksekutif Mahasiswa', const Color(0xFF0D47A1)),
+                _buildCategoryTile(context, Icons.gavel, 'MPM', 'Legislatif Mahasiswa', const Color(0xFF4A148C)),
+                _buildCategoryTile(context, Icons.school, 'HMJ', 'Himpunan Jurusan', const Color(0xFF00695C)),
+                _buildCategoryTile(context, Icons.sports_soccer, 'UKM', 'Minat & Bakat', const Color(0xFFE65100)),
               ],
-            ),
-            const SizedBox(height: 24),
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: ListTile(
-                leading: const CircleAvatar(
-                  backgroundColor: Color(0xFF0D47A1),
-                  child: Icon(Icons.bookmark, color: Colors.white),
-                ),
-                title: const Text('Daftar Ormawa Tersimpan', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Kelola pilihan Ormawa, divisi target, dan catatanmu'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: onSavedTap,
-              ),
             ),
           ],
         ),
@@ -102,9 +118,56 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryTile(IconData icon, String title, String subtitle, Color color) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return InkWell(
-      onTap: onExploreTap,
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Card(
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: color.withValues(alpha: 0.12),
+                child: Icon(icon, color: color),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                    Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryTile(
+    BuildContext context,
+    IconData icon,
+    String category,
+    String subtitle,
+    Color color,
+  ) {
+    return InkWell(
+      onTap: () {
+        context.read<OrmawaProvider>().setCategory(category);
+        onExploreTap();
+      },
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(10),
@@ -122,7 +185,7 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+                  Text(category, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
                   Text(
                     subtitle,
                     maxLines: 1,

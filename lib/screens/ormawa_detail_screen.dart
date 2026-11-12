@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/ormawa_model.dart';
+import '../providers/saved_ormawa_provider.dart';
 import 'add_saved_ormawa_screen.dart';
 
 class OrmawaDetailScreen extends StatelessWidget {
@@ -9,6 +11,8 @@ class OrmawaDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSaved = context.watch<SavedOrmawaProvider>().isOrmawaSaved(ormawa.id);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(ormawa.shortName),
@@ -79,16 +83,22 @@ class OrmawaDetailScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AddSavedOrmawaScreen(ormawa: ormawa),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.bookmark_add),
-                label: const Text('Simpan ke Daftar Minat Saya'),
+                onPressed: isSaved
+                    ? null
+                    : () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AddSavedOrmawaScreen(ormawa: ormawa),
+                          ),
+                        );
+                      },
+                icon: Icon(isSaved ? Icons.bookmark_added : Icons.bookmark_add),
+                label: Text(
+                  isSaved
+                      ? 'Sudah Tersimpan di Daftar Minat'
+                      : 'Simpan ke Daftar Minat Saya',
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0D47A1),
                   foregroundColor: Colors.white,
