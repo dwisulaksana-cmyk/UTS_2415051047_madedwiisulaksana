@@ -131,7 +131,7 @@ flutter pub get
 
 ### 4. Konfigurasi Environment
 
-Buat file `.env` pada direktori utama proyek dengan konfigurasi berikut:
+Salin file `.env.example` menjadi `.env` pada direktori utama proyek, kemudian isi nilai konfigurasi Supabase. Jika membuat secara manual, gunakan format berikut:
 
 ```env
 SUPABASE_URL=https://mjjzkepqaiynjojxkufh.supabase.co
@@ -161,3 +161,4 @@ flutter analyze
 Source code aplikasi dapat diakses melalui:
 
 [GitHub - Explore Ormawa Undiksha](https://github.com/dwisulaksana-cmyk/UTS_2415051047_madedwiisulaksana)
+
