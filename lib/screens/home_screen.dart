@@ -62,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFFB300),
                       foregroundColor: Colors.black87,
-                      fontWeight: FontWeight.bold,
+                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
