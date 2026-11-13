@@ -1,4 +1,4 @@
-class SavedOrmawaModel {
+﻿class SavedOrmawaModel {
   final int? id;
   final String studentNim;
   final int ormawaId;
@@ -24,7 +24,7 @@ class SavedOrmawaModel {
   factory SavedOrmawaModel.fromJson(Map<String, dynamic> json) {
     return SavedOrmawaModel(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? ''),
-      studentNim: json['student_nim']?.toString() ?? '2415051047',
+      studentNim: json['student_nim']?.toString() ?? '',
       ormawaId: json['ormawa_id'] is int
           ? json['ormawa_id']
           : int.tryParse(json['ormawa_id']?.toString() ?? '0') ?? 0,

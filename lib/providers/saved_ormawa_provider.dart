@@ -1,10 +1,11 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
+import '../constants/app_constants.dart';
 import '../models/saved_ormawa_model.dart';
 import '../repositories/ormawa_repository.dart';
 
 class SavedOrmawaProvider extends ChangeNotifier {
   final OrmawaRepository _repository;
-  static const String defaultStudentNim = '2415051047';
+  static const String defaultStudentNim = AppConstants.studentNim;
 
   SavedOrmawaProvider({OrmawaRepository? repository})
       : _repository = repository ?? OrmawaRepository();

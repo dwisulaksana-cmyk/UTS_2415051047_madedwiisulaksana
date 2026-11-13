@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import '../constants/app_constants.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -23,8 +24,8 @@ class ProfileScreen extends StatelessWidget {
               'Made Dwi Sulaksana',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const Text(
-              'NIM: 2415051047 • Kelas: PTI 5B',
+            Text(
+              'NIM: ${AppConstants.studentNim} | Kelas: PTI 5B',
               style: TextStyle(color: Colors.black54),
             ),
             const SizedBox(height: 24),
@@ -41,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
                   ListTile(
                     leading: Icon(Icons.apps, color: Color(0xFF0D47A1)),
                     title: Text('Tentang Aplikasi'),
-                    subtitle: Text('Explore Ormawa Undiksha v1.0.0 — Project UTS Pemrograman Mobile'),
+                    subtitle: Text('Explore Ormawa Undiksha v1.0.0 â€” Project UTS Pemrograman Mobile'),
                   ),
                   Divider(height: 1),
                   ListTile(
